@@ -1,4 +1,6 @@
-﻿namespace SimpleWiper.Core
+﻿using System.Runtime.InteropServices;
+
+namespace SimpleWiper.Core
 {
     public class FileOperations
     {
@@ -64,10 +66,22 @@
             var directoryPath = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
 
-            File.Move(directoryPath + "\\" + fileName,
-                directoryPath + "\\" + varRandomFileName);
+            var isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            if (isLinux)
+            {
 
-            return directoryPath + "\\" + varRandomFileName;
+                File.Move(directoryPath + "/" + fileName,
+                    directoryPath + "/" + varRandomFileName);
+
+                return directoryPath + "/" + varRandomFileName;
+            }
+            else
+            {
+                File.Move(directoryPath + "\\" + fileName,
+                    directoryPath + "\\" + varRandomFileName);
+
+                return directoryPath + "\\" + varRandomFileName;
+            }
         }
 
         public static bool DeleteFileAfterWipe(string path)
