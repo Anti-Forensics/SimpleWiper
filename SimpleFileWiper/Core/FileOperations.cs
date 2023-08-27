@@ -1,13 +1,10 @@
-﻿using System;
-
-
-namespace SimpleWiper.Core
+﻿namespace SimpleWiper.Core
 {
     public class FileOperations
     {
         public static bool OverwriteFileBlockSize4096(string path)
         {
-            long fileLength = 0;
+            decimal fileLength = 0;
 
             try
             {
@@ -27,21 +24,50 @@ namespace SimpleWiper.Core
             FileStream fileStream = new FileStream(path, FileMode.Open);
             StreamWriter streamWriter = new StreamWriter(fileStream);
 
-            var bytes = new Byte[4096];
-            new Random().NextBytes(bytes);
+            var bytesBuffer = new Byte[4096];
+            new Random().NextBytes(bytesBuffer);
 
-            for (int i = 0; i <= Math.Ceiling((decimal)fileLength / bytes.Length); i++)
+            var totalBlocks = Math.Floor(fileLength / bytesBuffer.Length);
+            decimal totalBlocksWritten = 0;
+
+            for (int i = 0; i <= totalBlocks; i++)
             {
-                streamWriter.BaseStream.Write(bytes, 0, bytes.Length);
+                if (i == totalBlocks)
+                {
+                    var totalFileLength = fileLength - (4096 * totalBlocksWritten);
+                    bytesBuffer = new byte[((int)totalFileLength)];
+                    new Random().NextBytes(bytesBuffer);
 
-                Console.SetCursorPosition(0, 0);
-                Console.WriteLine($"Progress: {i:n0} blocks (4096 bytes) of " +
-                    $"{fileLength / bytes.Length:n0} blocks.");
+                    streamWriter.BaseStream.Write(bytesBuffer, 0, bytesBuffer.Length);
+
+                    Console.WriteLine($"[+] The end of/or entire file has " +
+                        $"been overwritten: ({bytesBuffer.Length} bytes of data)");
+                }
+                else
+                {
+                    streamWriter.BaseStream.Write(bytesBuffer, 0, bytesBuffer.Length);
+
+                    Console.SetCursorPosition(0, 0);
+                    Console.WriteLine($"[+] Progress: {i:n0} blocks (4096 bytes) of " +
+                        $"{totalBlocks:n0} blocks.");
+
+                    totalBlocksWritten += 1;
+                }
             }
-
             streamWriter.Close();
-
             return true;
+        }
+
+        public static string ChangeFilename(string path)
+        {
+            var varRandomFileName = new Random().NextDouble();
+            var directoryPath = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+
+            File.Move(directoryPath + "\\" + fileName,
+                directoryPath + "\\" + varRandomFileName);
+
+            return directoryPath + "\\" + varRandomFileName;
         }
 
         public static bool DeleteFileAfterWipe(string path)

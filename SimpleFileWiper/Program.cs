@@ -14,12 +14,7 @@ namespace SimpleWiper
             }
             catch (System.IndexOutOfRangeException)
             {
-                Console.WriteLine("[!] The file path is empty: SimpleFileWiper.exe <path-to-file>");
-                FileOperations.ExitApplicationWithError();
-            }
-            catch (System.ArgumentException)
-            {
-                Console.WriteLine("[!] The file path is empty: SimpleFileWiper.exe <path>");
+                Console.WriteLine("[!] The file path is empty: SimpleFileWiper.exe <path\to\file>");
                 FileOperations.ExitApplicationWithError();
             }
             catch (Exception ex)
@@ -35,7 +30,7 @@ namespace SimpleWiper
                 Console.WriteLine("[+] File overwritten successfully.");
             }
 
-            if (FileOperations.DeleteFileAfterWipe(path))
+            if (FileOperations.DeleteFileAfterWipe(FileOperations.ChangeFilename(path)))
             {
                 Console.WriteLine("[+] File deleted after being overwritten.");
             }
