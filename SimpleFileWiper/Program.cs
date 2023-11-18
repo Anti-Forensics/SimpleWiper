@@ -14,7 +14,7 @@ namespace SimpleWiper
             }
             catch (System.IndexOutOfRangeException)
             {
-                Console.WriteLine("[!] The file path is empty: SimpleFileWiper.exe <path\to\file>");
+                Console.WriteLine("[!] The file path is empty: SimpleFileWiper.exe <path\\to\\file>");
                 FileOperations.ExitApplicationWithError();
             }
             catch (Exception ex)

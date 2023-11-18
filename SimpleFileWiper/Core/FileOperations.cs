@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SimpleWiper.Core
 {
@@ -62,25 +63,29 @@ namespace SimpleWiper.Core
 
         public static string ChangeFilename(string path)
         {
-            var varRandomFileName = new Random().NextDouble();
+            var rand = new Random();
             var directoryPath = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
-
             var isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            Byte[] fileNameByteArray = new byte[fileName.Length];
+
+            rand.NextBytes(fileNameByteArray);
+            string randomFileName = Encoding.Default.GetString(fileNameByteArray);
+
             if (isLinux)
             {
 
                 File.Move(directoryPath + "/" + fileName,
-                    directoryPath + "/" + varRandomFileName);
+                    directoryPath + "/" + rand);
 
-                return directoryPath + "/" + varRandomFileName;
+                return directoryPath + "/" + randomFileName;
             }
             else
             {
                 File.Move(directoryPath + "\\" + fileName,
-                    directoryPath + "\\" + varRandomFileName);
+                    directoryPath + "\\" + randomFileName);
 
-                return directoryPath + "\\" + varRandomFileName;
+                return directoryPath + "\\" + randomFileName;
             }
         }
 
