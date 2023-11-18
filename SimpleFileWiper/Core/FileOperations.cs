@@ -67,25 +67,30 @@ namespace SimpleWiper.Core
             var directoryPath = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-            Byte[] fileNameByteArray = new byte[fileName.Length];
-
-            rand.NextBytes(fileNameByteArray);
-            string randomFileName = Encoding.Default.GetString(fileNameByteArray);
+            
+            const string fileNameChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var randomFileNameArray =  new string(Enumerable.Repeat(fileNameChars, fileName.Length)
+                .Select(s => s[rand.Next(s.Length)]).ToArray());
 
             if (isLinux)
             {
 
-                File.Move(directoryPath + "/" + fileName,
-                    directoryPath + "/" + rand);
+                if (directoryPath == "")
+                {
+                    directoryPath = ".";
+                }
 
-                return directoryPath + "/" + randomFileName;
+                File.Move(Path.Combine(directoryPath, fileName),
+                    Path.Combine(directoryPath, randomFileNameArray));
+
+                return Path.Combine(directoryPath, randomFileNameArray);
             }
             else
             {
-                File.Move(directoryPath + "\\" + fileName,
-                    directoryPath + "\\" + randomFileName);
+                File.Move(Path.Combine(directoryPath, fileName), 
+                    Path.Combine(directoryPath, randomFileNameArray));
 
-                return directoryPath + "\\" + randomFileName;
+                return Path.Combine(directoryPath, randomFileNameArray);
             }
         }
 
